@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3309D03F29DDE0DA00E0E7BE /* FlowerShop.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 3309D03E29DDE0DA00E0E7BE /* FlowerShop.mlmodel */; };
+		330DACBF29E96EC200559437 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330DACBC29E96EC200559437 /* FilterViewController.swift */; };
+		330DACC029E96EC200559437 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330DACBD29E96EC200559437 /* CameraView.swift */; };
+		330DACC129E96EC200559437 /* DetailImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330DACBE29E96EC200559437 /* DetailImageView.swift */; };
+		330DACC329E9702900559437 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330DACC229E9702900559437 /* UIView+Extensions.swift */; };
 		336FE13429D5DD3B00D7D7B7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE13329D5DD3B00D7D7B7 /* AppDelegate.swift */; };
 		336FE13629D5DD3B00D7D7B7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE13529D5DD3B00D7D7B7 /* SceneDelegate.swift */; };
 		336FE13829D5DD3B00D7D7B7 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE13729D5DD3B00D7D7B7 /* MainViewController.swift */; };
@@ -18,16 +23,21 @@
 		336FE15529D5DF8E00D7D7B7 /* UIViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE14D29D5DF8E00D7D7B7 /* UIViewController+Extensions.swift */; };
 		336FE15629D5DF8E00D7D7B7 /* IndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE14F29D5DF8E00D7D7B7 /* IndicatorView.swift */; };
 		336FE15729D5DF8E00D7D7B7 /* CustomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE15029D5DF8E00D7D7B7 /* CustomImageView.swift */; };
-		336FE15829D5DF8E00D7D7B7 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE15129D5DF8E00D7D7B7 /* UIView+Extensions.swift */; };
 		336FE15929D5DF8E00D7D7B7 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE15229D5DF8E00D7D7B7 /* UIColor+Extensions.swift */; };
 		336FE15A29D5DF8E00D7D7B7 /* UILabel+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE15329D5DF8E00D7D7B7 /* UILabel+Extensions.swift */; };
 		336FE15E29D5DFAD00D7D7B7 /* CustomCaptureButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE15C29D5DFAD00D7D7B7 /* CustomCaptureButton.swift */; };
 		336FE15F29D5DFAD00D7D7B7 /* CameraSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE15D29D5DFAD00D7D7B7 /* CameraSession.swift */; };
+		336FE16129D5E96800D7D7B7 /* DetailImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336FE16029D5E96800D7D7B7 /* DetailImageViewController.swift */; };
 		C6E7AFE5D24BFD558B7FEF75 /* Pods_FlowerClassification.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DE87087092D1D7076479C7A /* Pods_FlowerClassification.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0C8A9F602BA54731BD0652FF /* Pods-FlowerClassification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowerClassification.debug.xcconfig"; path = "Target Support Files/Pods-FlowerClassification/Pods-FlowerClassification.debug.xcconfig"; sourceTree = "<group>"; };
+		3309D03E29DDE0DA00E0E7BE /* FlowerShop.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = FlowerShop.mlmodel; sourceTree = "<group>"; };
+		330DACBC29E96EC200559437 /* FilterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
+		330DACBD29E96EC200559437 /* CameraView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		330DACBE29E96EC200559437 /* DetailImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailImageView.swift; sourceTree = "<group>"; };
+		330DACC229E9702900559437 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		336FE13029D5DD3B00D7D7B7 /* FlowerClassification.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowerClassification.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		336FE13329D5DD3B00D7D7B7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		336FE13529D5DD3B00D7D7B7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -41,11 +51,11 @@
 		336FE14D29D5DF8E00D7D7B7 /* UIViewController+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extensions.swift"; sourceTree = "<group>"; };
 		336FE14F29D5DF8E00D7D7B7 /* IndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndicatorView.swift; sourceTree = "<group>"; };
 		336FE15029D5DF8E00D7D7B7 /* CustomImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomImageView.swift; sourceTree = "<group>"; };
-		336FE15129D5DF8E00D7D7B7 /* UIView+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		336FE15229D5DF8E00D7D7B7 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
 		336FE15329D5DF8E00D7D7B7 /* UILabel+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UILabel+Extensions.swift"; sourceTree = "<group>"; };
 		336FE15C29D5DFAD00D7D7B7 /* CustomCaptureButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCaptureButton.swift; sourceTree = "<group>"; };
 		336FE15D29D5DFAD00D7D7B7 /* CameraSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraSession.swift; sourceTree = "<group>"; };
+		336FE16029D5E96800D7D7B7 /* DetailImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailImageViewController.swift; sourceTree = "<group>"; };
 		5DE87087092D1D7076479C7A /* Pods_FlowerClassification.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowerClassification.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF52FF8B52FF89E8277D8270 /* Pods-FlowerClassification.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowerClassification.release.xcconfig"; path = "Target Support Files/Pods-FlowerClassification/Pods-FlowerClassification.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -88,6 +98,7 @@
 				336FE14729D5DF2400D7D7B7 /* Apps */,
 				336FE14829D5DF3300D7D7B7 /* Controllers */,
 				336FE13929D5DD3B00D7D7B7 /* Main.storyboard */,
+				3309D03E29DDE0DA00E0E7BE /* FlowerShop.mlmodel */,
 				336FE13C29D5DD3C00D7D7B7 /* Assets.xcassets */,
 				336FE13E29D5DD3C00D7D7B7 /* LaunchScreen.storyboard */,
 				336FE14129D5DD3C00D7D7B7 /* Info.plist */,
@@ -100,6 +111,9 @@
 			children = (
 				336FE13329D5DD3B00D7D7B7 /* AppDelegate.swift */,
 				336FE13529D5DD3B00D7D7B7 /* SceneDelegate.swift */,
+				330DACBD29E96EC200559437 /* CameraView.swift */,
+				330DACBE29E96EC200559437 /* DetailImageView.swift */,
+				330DACBC29E96EC200559437 /* FilterViewController.swift */,
 			);
 			path = Apps;
 			sourceTree = "<group>";
@@ -109,6 +123,7 @@
 			children = (
 				336FE13729D5DD3B00D7D7B7 /* MainViewController.swift */,
 				336FE14929D5DF4700D7D7B7 /* CameraViewController.swift */,
+				336FE16029D5E96800D7D7B7 /* DetailImageViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -119,9 +134,9 @@
 				336FE14C29D5DF8E00D7D7B7 /* UIImageView+Extensions.swift */,
 				336FE14D29D5DF8E00D7D7B7 /* UIViewController+Extensions.swift */,
 				336FE14E29D5DF8E00D7D7B7 /* CommonView */,
-				336FE15129D5DF8E00D7D7B7 /* UIView+Extensions.swift */,
 				336FE15229D5DF8E00D7D7B7 /* UIColor+Extensions.swift */,
 				336FE15329D5DF8E00D7D7B7 /* UILabel+Extensions.swift */,
+				330DACC229E9702900559437 /* UIView+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -281,14 +296,19 @@
 				336FE15A29D5DF8E00D7D7B7 /* UILabel+Extensions.swift in Sources */,
 				336FE15729D5DF8E00D7D7B7 /* CustomImageView.swift in Sources */,
 				336FE13829D5DD3B00D7D7B7 /* MainViewController.swift in Sources */,
-				336FE15829D5DF8E00D7D7B7 /* UIView+Extensions.swift in Sources */,
+				336FE16129D5E96800D7D7B7 /* DetailImageViewController.swift in Sources */,
 				336FE14A29D5DF4700D7D7B7 /* CameraViewController.swift in Sources */,
 				336FE15F29D5DFAD00D7D7B7 /* CameraSession.swift in Sources */,
 				336FE15629D5DF8E00D7D7B7 /* IndicatorView.swift in Sources */,
+				330DACBF29E96EC200559437 /* FilterViewController.swift in Sources */,
 				336FE13429D5DD3B00D7D7B7 /* AppDelegate.swift in Sources */,
+				330DACC029E96EC200559437 /* CameraView.swift in Sources */,
+				330DACC329E9702900559437 /* UIView+Extensions.swift in Sources */,
 				336FE15529D5DF8E00D7D7B7 /* UIViewController+Extensions.swift in Sources */,
+				3309D03F29DDE0DA00E0E7BE /* FlowerShop.mlmodel in Sources */,
 				336FE13629D5DD3B00D7D7B7 /* SceneDelegate.swift in Sources */,
 				336FE15E29D5DFAD00D7D7B7 /* CustomCaptureButton.swift in Sources */,
+				330DACC129E96EC200559437 /* DetailImageView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -442,11 +462,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FlowerClassification/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please allow access your camera!";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please allow access photos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -472,11 +494,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FlowerClassification/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please allow access your camera!";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please allow access photos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

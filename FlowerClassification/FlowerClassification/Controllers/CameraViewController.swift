@@ -5,7 +5,6 @@
 //  Created by Khanh Vu on 30/03/5 Reiwa.
 //
 
-import Foundation
 //
 //  ViewController.swift
 //  IntergrateMLModel
@@ -16,6 +15,7 @@ import Foundation
 import UIKit
 import SnapKit
 import AVFoundation
+import Vision
 
 class CameraViewController: UIViewController {
     var session: AVCaptureSession!
@@ -24,7 +24,8 @@ class CameraViewController: UIViewController {
     var videoOutput: AVCaptureVideoDataOutput!
     var deviceInput: AVCaptureInput!
     var videoDeviceInput: AVCaptureDeviceInput!
-    
+    private var coremlRequest: VNCoreMLRequest?
+
     private var isCapture = false
     private let sessionQueue = DispatchQueue(label: "session queue")// Communicate with the session and other session objects on this queue.
     private var setupResult: SessionSetupResult = .success
@@ -67,12 +68,42 @@ class CameraViewController: UIViewController {
         imv.isHidden = true
         imv.layer.cornerRadius = 20
         imv.layer.masksToBounds = true
+        imv.layer.borderWidth = 3
+        imv.layer.borderColor = UIColor.white.cgColor
         return imv
+    }()
+    
+    private lazy var lbIdentifier: UILabel = {
+        let lb = UILabel()
+        lb.textColor = .blue
+        lb.font = UIFont.systemFont(ofSize: 20)
+        lb.text = "Identifier"
+        lb.textAlignment = .center
+        return lb
+    }()
+    private lazy var lbConfidence: UILabel = {
+        let lb = UILabel()
+        lb.textColor = .blue
+        lb.font = UIFont.systemFont(ofSize: 20)
+        lb.text = "Confidence"
+        lb.textAlignment = .center
+        return lb
+    }()
+    
+    private lazy var stvLabel: UIStackView = {
+        let stv = UIStackView()
+        [lbIdentifier, lbConfidence].forEach { sub in
+            stv.addArrangedSubview(sub)
+        }
+        stv.distribution = .fillEqually
+        stv.axis = .vertical
+        stv.alignment = .center
+        return stv
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.predict()
         self.configView()
         // Do any additional setup after loading the view.
         self.checkPermissions()
@@ -94,7 +125,7 @@ class CameraViewController: UIViewController {
     
     func configView() {
         self.view.backgroundColor = UIColor(hexString: "#242121")
-        [self.vPreviewVideo, self.btnSwitchCamera, self.btnCapture].forEach { subView in
+        [self.vPreviewVideo, self.btnSwitchCamera, self.btnCapture, self.stvLabel].forEach { subView in
             self.view.addSubview(subView)
         }
         self.vPreviewVideo.snp.makeConstraints { make in
@@ -114,10 +145,49 @@ class CameraViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-20)
             make.centerY.equalTo(self.btnCapture.snp.centerY)
         }
+        self.stvLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(30)
+            make.top.equalTo(self.vPreviewVideo.snp.bottom).offset(5)
+        }
         
         //        self.btnCapture.layer.cornerRadius = 30
         //        self.btnCapture.vCenter.layer.cornerRadius = 24
         
+    }
+    
+    private func predict() {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            
+            guard let model = try? VNCoreMLModel(for: FlowerShop(configuration: MLModelConfiguration()).model) else {
+                fatalError("Model initilation failed!")
+            }
+            let coremlRequest = VNCoreMLRequest(model: model) { [weak self] request, error in
+                guard let self = self else {
+                    return
+                }
+                DispatchQueue.main.async {
+                    if let results = request.results {
+                        self.handleRequest(results)
+                    }
+                }
+            }
+            coremlRequest.imageCropAndScaleOption = .scaleFill
+            self?.coremlRequest = coremlRequest
+        }
+    }
+    
+    func handleRequest(_ results: [Any]) {
+        if let results = results as? [VNClassificationObservation] {
+            print("\(results.first!.identifier) : \(results.first!.confidence)")
+            if results.first!.confidence > 0.7 {
+                DispatchQueue.main.async {
+                    self.lbIdentifier.text = results.first!.identifier
+                    self.lbConfidence.text = "\(results.first!.confidence)"
+                }
+//                print(results.first?.identifier)
+                
+            }
+        }
     }
     
     private func configureSession() {
@@ -152,20 +222,7 @@ class CameraViewController: UIViewController {
                 self.session.startRunning()
             case .notAuthorized:
                 DispatchQueue.main.async {
-                    let changePrivacySetting = "AVCam doesn't have permission to use the camera, please change privacy settings"
-                    let message = NSLocalizedString(changePrivacySetting, comment: "Alert message when the user has denied access to the camera")
-                    let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
-                    
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
-                                                            style: .cancel,
-                                                            handler: nil))
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
-                                                            style: .`default`,
-                                                            handler: { _ in
-                        UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-                    }))
-                    
-                    self.present(alertController, animated: true, completion: nil)
+                    self.showAlertOpenSettingCamera()
                 }
             case .configurationFailed:
                 DispatchQueue.main.async {
@@ -456,18 +513,34 @@ class CameraViewController: UIViewController {
         }
     }
     
+    
 }
 
 extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        if self.isCapture {
-            self.isCapture = false
-            guard let cvPixel = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+        guard let cvPixel = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return
+        }
+        DispatchQueue.global().sync {
+            guard let coremlRequest = self.coremlRequest else {
                 return
             }
+            let bufferImage = VNImageRequestHandler(cvPixelBuffer: cvPixel, options: [:])
+            
+            do {
+                try bufferImage.perform([coremlRequest])
+            } catch {
+                print("cant perform predict: ", error)
+            }
+        }
+        if self.isCapture {
+            self.isCapture = false
+            
             let image = convertToUIImage(pixelBuffer: cvPixel)
             let aspectRatio = image.size.height / image.size.width
             self.updateImagePreviewWhenCaptured(with: image, ratio: aspectRatio)
+            
+            
         }
         
         
@@ -484,19 +557,19 @@ extension CameraViewController {
         DispatchQueue.main.async {
             self.view.addSubview(self.imvPreviewImage)
             self.imvPreviewImage.snp.makeConstraints { make in
-                make.leading.equalToSuperview().offset(20)
-                make.bottom.equalTo(self.vPreviewVideo.snp.bottom).offset(-10)
-                make.width.equalTo(120)
-                make.height.equalTo(120 * ratio)
+                make.leading.equalToSuperview().offset(10)
+                make.bottom.equalToSuperview().offset(-20)
+                make.width.equalTo(60)
+                make.height.equalTo(60 * ratio)
                 print("ratio", ratio)
 
             }
             self.imvPreviewImage.image = image
             self.imvPreviewImage.isHidden = false
             
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
-//                self.imvPreviewImage.removeFromSuperview()
-//            })
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+                self.imvPreviewImage.removeFromSuperview()
+            })
         }
     }
 }

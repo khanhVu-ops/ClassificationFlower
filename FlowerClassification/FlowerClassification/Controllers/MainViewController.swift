@@ -20,7 +20,9 @@ class MainViewController: UIViewController {
     }
 
     @IBAction func btnOpenLibraryTapped(_ sender: UIButton) {
-        
+        let detailVC = DetailImageViewController()
+        self.modalPresentationStyle = .fullScreen
+        self.present(detailVC, animated: true, completion: nil)
     }
 
 }

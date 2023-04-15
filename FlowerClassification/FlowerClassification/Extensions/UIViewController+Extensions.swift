@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-
+import Photos
 extension UIViewController {
     
     func showAlert(title: String?, message: String) {
@@ -66,6 +66,59 @@ extension UIViewController {
             view.isUserInteractionEnabled = true
         }
     }
+    
+    func showAlertOpenSettingCamera() {
+        let changePrivacySetting = "AVCam doesn't have permission to use the camera, please change privacy settings"
+        let message = NSLocalizedString(changePrivacySetting, comment: "Alert message when the user has denied access to the camera")
+        let alertController = UIAlertController(title: "AVCam", message: message, preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
+                                                style: .cancel,
+                                                handler: nil))
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
+                                                style: .`default`,
+                                                handler: { _ in
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+        }))
+        
+        self.present(alertController, animated: true, completion: nil)
 
+    }
+    func showAlertSetting(title: String, message: String) {
+        let changePrivacySetting = message
+        let message = NSLocalizedString(changePrivacySetting, comment: message)
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
+                                                style: .cancel,
+                                                handler: nil))
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
+                                                style: .`default`,
+                                                handler: { _ in
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+        }))
+        present(alertController, animated: true, completion: nil)
+    }
+
+    func requestPermissionAccessPhotos(completion: @escaping(Bool)->Void) {
+        PHPhotoLibrary.requestAuthorization { (status) in
+            switch status {
+            case .authorized:
+                completion(true)
+            case .denied, .restricted:
+                completion(false)
+                print("Access to Photos library denied or restricted.")
+            case .notDetermined:
+                completion(false)
+                print("Access to Photos library not determined.")
+            case .limited:
+                completion(false)
+                print("Limit")
+            @unknown default:
+                completion(false)
+                print("Unknown authorization status for Photos library.")
+            }
+        }
+    }
     
 }
