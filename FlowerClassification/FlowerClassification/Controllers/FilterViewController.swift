@@ -15,6 +15,7 @@ protocol CameraProtocol: NSObject {
 }
 class FilterViewController: UIViewController {
     
+    // khai báo label hiển thị tên của loài hoa
     private lazy var lbIdentifier: UILabel = {
         let lb = UILabel()
         lb.textColor = .white
@@ -23,6 +24,8 @@ class FilterViewController: UIViewController {
         lb.textAlignment = .center
         return lb
     }()
+    
+    // khai báo label hiển thị độ tin cậy
     private lazy var lbConfidence: UILabel = {
         let lb = UILabel()
         lb.textColor = .white
@@ -49,8 +52,11 @@ class FilterViewController: UIViewController {
     private var imagePicker = UIImagePickerController()
 
     private var coremlRequest: VNCoreMLRequest?
-    let dataDict = ["Agapanthus": "Hoa Bách Tử Liên", "Tansy": "Hoa Cúc", "Bougainvillea": "Hoa Giấy", "Jasmine": "Hoa Nhài"]
+    
+    // chuyển đổi tên tiếng anh sang tiếng việt
+    let dataDict = ["daisy": "Hoa Cúc Trắng", "dandelion": "Hoa Bồ Công Anh", "roses": "Hoa Hồng", "sunflowers": "Hoa Hướng Dương", "tulips": "Hoa Tulip"]
     var isCaptured = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -60,6 +66,7 @@ class FilterViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.cameraView.startSession()
+       
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -67,6 +74,7 @@ class FilterViewController: UIViewController {
         self.cameraView.stopSession()
     }
     
+    // set up view hiển thị
     func setUpView() {
         self.view.backgroundColor = UIColor(hexString: "#242121")
         self.cameraView = CameraView(cameraType: .video)
@@ -98,18 +106,22 @@ class FilterViewController: UIViewController {
         
     }
     
+    // load model flower classification và thực hiện xử lí khi có kết quả trả về
     private func predict() {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             
-            guard let model = try? VNCoreMLModel(for: FlowerShop(configuration: MLModelConfiguration()).model) else {
+            // load model với VNCoreMLModel
+            guard let model = try? VNCoreMLModel(for: Flowers_classification(configuration: MLModelConfiguration()).model) else {
                 fatalError("Model initilation failed!")
             }
+            // tạo request
             let coremlRequest = VNCoreMLRequest(model: model) { [weak self] request, error in
                 guard let self = self else {
                     return
                 }
                 DispatchQueue.main.async {
                     if let results = request.results {
+                        // handle khi có kết quả trả về
                         self.handleRequest(results)
                     }
                 }
@@ -119,11 +131,14 @@ class FilterViewController: UIViewController {
         }
     }
     
+    // func xử lí kết quả trả về sau khi nhận diện ảnh
     func handleRequest(_ results: [Any]) {
         if let results = results as? [VNClassificationObservation] {
             print("\(results.first!.identifier) : \(results.first!.confidence)")
             let name = dataDict[results.first!.identifier]
-            if results.first!.identifier == "Agapanthus" && results.first!.confidence < 0.9 {
+            
+            // check nếu confidence < 0.7 thì hiển thị unknow còn nếu >= 0.7 hiển thị ra identifier và confidence của kết quả đó
+            if  results.first!.confidence < 0.7 {
                 DispatchQueue.main.async {
                     self.lbIdentifier.text = "Unkown"
                     self.lbConfidence.text = ""
@@ -137,20 +152,6 @@ class FilterViewController: UIViewController {
         }
     }
     
-    func handleCoreml(cvPixel: CVPixelBuffer) {
-        DispatchQueue.global().sync {
-            guard let coremlRequest = self.coremlRequest else {
-                return
-            }
-            let bufferImage = VNImageRequestHandler(cvPixelBuffer: cvPixel, options: [:])
-            
-            do {
-                try bufferImage.perform([coremlRequest])
-            } catch {
-                print("cant perform predict: ", error)
-            }
-        }
-    }
 }
 extension FilterViewController: CameraViewDelegate {
     func didShowAlert(title: String, message: String) {
@@ -161,6 +162,7 @@ extension FilterViewController: CameraViewDelegate {
         self.showAlertSetting(title: title, message: message)
     }
     
+    // xử lí nhận diện hình ảnh bằng model khi chụp từ camera
     func didCapturedImage(imageCaptured: UIImage) {
         DispatchQueue.main.async {
             self.detailView.configImage(image: imageCaptured)
@@ -171,6 +173,7 @@ extension FilterViewController: CameraViewDelegate {
                 guard let coremlRequest = self.coremlRequest else {
                     return
                 }
+                // request handle image
                 let bufferImage = VNImageRequestHandler(cgImage: imageCaptured.cgImage!, options: [:])
                 
                 do {
@@ -182,16 +185,16 @@ extension FilterViewController: CameraViewDelegate {
         }
     }
     
-    func btnCancelTapped() {
-        self.dismiss(animated: true)
-    }
-    
+    // xử lí khi chọn mở thư viện
     func btnLibraryTapped() {
         self.imagePicker.delegate = self
         self.imagePicker.sourceType = .photoLibrary
         self.isCaptured = true
+        // hiển thị view thư viện ảnh
         present(imagePicker, animated: true, completion: nil)
     }
+    
+    // Xử lí nhận diện hình ảnh bằng model từ  các Frame được lấy ra từ camera realtime
     func didCaptureFrameVideo(cvPixel: CVPixelBuffer) {
         if !isCaptured {
             DispatchQueue.global().sync {
@@ -229,15 +232,20 @@ extension FilterViewController: DetailImageViewProtocol {
 
 }
 extension FilterViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    // Xử lí khi chọn hình ảnh từ thư viện
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         let img = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
         guard let image = img else {
             return
         }
+        
+        // hiển thị ra màn hình
         self.detailView.configImage(image: image)
         self.detailView.isHidden = false
         self.cameraView.isHidden = true
+        // xử lí nhận diện bằng model
         DispatchQueue.global().sync {
             guard let coremlRequest = self.coremlRequest else {
                 return
@@ -250,12 +258,13 @@ extension FilterViewController: UIImagePickerControllerDelegate, UINavigationCon
                 print("cant perform predict: ", error)
             }
         }
-//        self.imvAvata.image = image
-
         picker.dismiss(animated: true, completion: nil)
     }
+    
+    // xử lí khi nhấn nút Cancel để tắt mằn hình thư viện
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
+        self.isCaptured = false
     }
 }
 

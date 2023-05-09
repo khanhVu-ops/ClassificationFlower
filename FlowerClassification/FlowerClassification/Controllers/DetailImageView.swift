@@ -13,6 +13,8 @@ protocol DetailImageViewProtocol: NSObject {
     func btnDownloadTapped()
     func btnSendImageTapped(image: UIImage)
 }
+
+// custom để hiển thị hình ảnh chi tiết
 class DetailImageView: UIView {
 
     private lazy var imvDetail: UIImageView = {
@@ -21,6 +23,7 @@ class DetailImageView: UIView {
         return imv
     }()
     
+    // Khai báo nút Back về màn trước đó
     private lazy var btnCancel: UIButton = {
         let btn = UIButton()
         btn.setImage(UIImage(systemName: "chevron.left"), for: .normal)
@@ -49,6 +52,7 @@ class DetailImageView: UIView {
         return btn
     }()
     
+    
     private lazy var vContent: UIView = {
         let v = UIView()
         [imvDetail, btnCancel, btnDownload].forEach { sub in
@@ -70,6 +74,8 @@ class DetailImageView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // Set up giao diện
     func setUpView() {
         self.backgroundColor = UIColor(hexString: "#242121")
         [vContent, btnSendImage].forEach { sub in

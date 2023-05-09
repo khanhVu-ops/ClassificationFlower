@@ -25,7 +25,7 @@ enum OutputType {
 }
 
 protocol CameraViewDelegate: AnyObject {
-    func btnCancelTapped()
+//    func btnCancelTapped()
     func didShowAlertSetting(title: String, message: String)
     func didShowAlert(title: String, message: String)
     func didCapturedImage(imageCaptured: UIImage)
@@ -33,7 +33,10 @@ protocol CameraViewDelegate: AnyObject {
     func didCaptureFrameVideo(cvPixel: CVPixelBuffer)
 }
 
+// Custom camera view
 class CameraView: UIView {
+    
+    // Khai báo biến
     var session: AVCaptureSession!
     var previewLayer : AVCaptureVideoPreviewLayer!
     var photoOutput : AVCapturePhotoOutput!
@@ -46,7 +49,8 @@ class CameraView: UIView {
     private let sessionQueue = DispatchQueue(label: "session queue")// Communicate with the session and other session objects on this queue.
     private var setupResult: SessionSetupResult = .success
     private let videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDualCamera], mediaType: .video, position: .unspecified)
-    
+    private var lastTimestamp = CMTime.zero
+    private var framesPerSecond: Double = 2
     lazy var vPreviewVideo: UIView = {
         let v = UIView()
         v.layer.cornerRadius = 15
@@ -116,6 +120,8 @@ class CameraView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    // Set up giao diện
     func configView() {
         self.backgroundColor = UIColor(hexString: "#242121")
         [self.vPreviewVideo, self.btnSwitchCamera, self.btnFlash, self.btnCapture, self.btnLibrary].forEach { subView in
@@ -171,6 +177,7 @@ class CameraView: UIView {
         self.addGestureRecognizer(pinchGesture)
     }
     
+    // Set up phiên camera
     private func configureSession() {
         if setupResult != .success {
             return
@@ -178,6 +185,7 @@ class CameraView: UIView {
         self.session = AVCaptureSession()
         self.session.beginConfiguration()
         self.session.sessionPreset = .photo
+        
         // Add input.
         self.setUpCamera()
 
@@ -196,6 +204,7 @@ class CameraView: UIView {
         self.session.commitConfiguration()
     }
     
+    // Bắt đầu phiên camera
     func startSession() {
         sessionQueue.async {
             switch self.setupResult {
@@ -214,6 +223,7 @@ class CameraView: UIView {
         
     }
     
+    // Dừng phiên camera
     func stopSession() {
         sessionQueue.async {
             if self.setupResult == .success {
@@ -223,6 +233,7 @@ class CameraView: UIView {
         }
     }
     
+    // Kiểm tra quyền truy cập camera
     func checkPermissions() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -242,6 +253,8 @@ class CameraView: UIView {
         }
     }
     
+    
+    // Add camera vào sesion
     func setUpCamera() {
         do {
             var defaultVideoDevice: AVCaptureDevice?
@@ -312,6 +325,7 @@ class CameraView: UIView {
         self.vPreviewVideo.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapHandleFocus)))
     }
     
+    // Setup output khi ở mode video
     func setupVideoOutput(){
         self.videoOutput = AVCaptureVideoDataOutput()
         self.videoOutput.alwaysDiscardsLateVideoFrames = true
@@ -327,6 +341,7 @@ class CameraView: UIView {
         self.videoOutput.connections.first?.videoOrientation = .portrait
     }
     
+    // Setup output khi ở mode photo
     func setUpPhotoOutput() {
         self.photoOutput = AVCapturePhotoOutput()
         if self.session.canAddOutput(self.photoOutput) {
@@ -344,6 +359,7 @@ class CameraView: UIView {
     
     //MARK: @objc func
     var zoomCamera = 1.0
+    // Xử lí zoom camera
     @objc func handlePinch(_ gestureRecognizer: UIPinchGestureRecognizer) {
         let camera = self.videoDeviceInput.device
         if gestureRecognizer.state == .began {
@@ -370,6 +386,7 @@ class CameraView: UIView {
  
     }
     
+    // xử lí khi tap focus camera
     @objc func tapHandleFocus(_ gestureRecognizer: UITapGestureRecognizer) {
         let point = gestureRecognizer.location(in: gestureRecognizer.view)
         self.addSquareWhenTapFocus(point: point)
@@ -378,11 +395,11 @@ class CameraView: UIView {
         
     }
     
-    @objc func btnCancelTapped() {
-        self.delegate?.btnCancelTapped()
-    }
+//    @objc func btnCancelTapped() {
+//        self.delegate?.btnCancelTapped()
+//    }
     
-    
+    // Xử lí khi bật tắt flash
     @objc func btnFlashTapped() {
         switch self.outputType {
         case .video:
@@ -415,6 +432,8 @@ class CameraView: UIView {
         }
         
     }
+    
+    // Xử lí khi đổi camera trước sau
     @objc func btnSwitchcameraTapped() {
         sessionQueue.async {
             let currentVideoDevice = self.videoDeviceInput.device
@@ -473,6 +492,7 @@ class CameraView: UIView {
         }
     }
     
+    // Xử lí khi nhấn vào nút chụp ảnh
     @objc func didTapCaptureImage() {
         print("capture")
         UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
@@ -493,10 +513,12 @@ class CameraView: UIView {
         }
     }
     
+    // Xử lí khi nhấn vào nút mở thư viện
     @objc func btnLibraryTapped() {
         self.delegate?.btnLibraryTapped()
     }
     
+    // Xử lí chức năng focus
     private func focus(with focusMode: AVCaptureDevice.FocusMode, exposureMode: AVCaptureDevice.ExposureMode, at devicePoint: CGPoint, monitorSubjectAreaChange: Bool) {
         sessionQueue.async {
             let device = self.videoDeviceInput.device
@@ -521,29 +543,44 @@ class CameraView: UIView {
 }
 
 extension CameraView: AVCaptureVideoDataOutputSampleBufferDelegate {
+        // Xử lí đầu ra là các frame của của mode video
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard let cvPixel = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-            return
-        }
-        self.delegate?.didCaptureFrameVideo(cvPixel: cvPixel)
-        if self.isCapture {
-            self.isCapture = false
-            var img: UIImage?
-            switch self.videoDeviceInput.device.position {
-            case .front :
-                img = convertToFlipImage(pixelBuffer: cvPixel)
-            default:
-                img = convertToUIImage(pixelBuffer: cvPixel)
-            }
-            guard let img = img else {
+        
+        // Lấy ra các frame từ video
+        let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+        let timeDifference = timestamp - lastTimestamp
+        let frameRate = Double(Double(CMTimeScale(timestamp.timescale)) / timeDifference.seconds)
+        if frameRate >= framesPerSecond {
+            // Process the frame here
+            guard let cvPixel = CMSampleBufferGetImageBuffer(sampleBuffer) else {
                 return
             }
-            self.delegate?.didCapturedImage(imageCaptured: img)
+            
+            // Bắn các Frame qua FilterViewController để xử lí
+            self.delegate?.didCaptureFrameVideo(cvPixel: cvPixel)
+            if self.isCapture {
+                self.isCapture = false
+                var img: UIImage?
+                switch self.videoDeviceInput.device.position {
+                case .front :
+                    img = convertToFlipImage(pixelBuffer: cvPixel)
+                default:
+                    img = convertToUIImage(pixelBuffer: cvPixel)
+                }
+                guard let img = img else {
+                    return
+                }
+                // Bắn hình ảnh Được chụp qua FilterViewcontroller để xử lí
+                self.delegate?.didCapturedImage(imageCaptured: img)
+            }
+            lastTimestamp = timestamp
         }
     }
 }
 
 extension CameraView: AVCapturePhotoCaptureDelegate {
+    
+    // Xử lí ouput của mode chụp ảnh
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard let imageData = photo.fileDataRepresentation() else {
             return
@@ -563,12 +600,14 @@ extension CameraView: AVCapturePhotoCaptureDelegate {
 }
 
 extension CameraView {
+    
     private enum SessionSetupResult {
         case success
         case notAuthorized
         case configurationFailed
     }
     
+    // Thêm animation hình vuông focus khi tap vào màn hình camera
     func addSquareWhenTapFocus(point: CGPoint) {
         self.vOverlay.transform = .identity
         self.vOverlay.removeFromSuperview()
@@ -588,6 +627,7 @@ extension CameraView {
         }
     }
     
+    // Các function đối type để xử lí
     func convertToUIImage(pixelBuffer: CVPixelBuffer) -> UIImage? {
         let image = CIImage(cvPixelBuffer: pixelBuffer)
         let context = CIContext(options: nil)
@@ -609,6 +649,7 @@ extension CameraView {
         return nil
     }
     
+    // Lấy hình ảnh đầu tiên trong thư viện
     func fetchFirstAssets(completion: @escaping (UIImage?)->Void)  {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
@@ -639,6 +680,8 @@ extension CameraView {
         }
     }
 }
+
+// Lưu hình ảnh vào cache
 class ImageCache {
     static let shared = ImageCache()
     private let cache = NSCache<NSString, UIImage>()
